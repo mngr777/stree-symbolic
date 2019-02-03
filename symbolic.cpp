@@ -2,11 +2,13 @@
 #include <random>
 #include <string>
 #include <stree/stree.hpp>
+#include "args.hpp"
 #include "individual.hpp"
+#include "fitness.hpp"
 #include "functions.hpp"
 #include "tree.hpp"
 
-int main() {
+int main(int argc, char** argv) {
     using std::cerr;
     using std::cout;
     using std::endl;
@@ -20,19 +22,16 @@ int main() {
     env.add_function("*", 2, &::multiply);
     env.add_function("%", 2, &::divide);
 
-    // Parameters
-    unsigned population_size = 100;
-    unsigned initial_depth   = 5;
-    float p_term             = 0.2;
-    unsigned max_generation  = 100;
-    stree::Params params{2.0, 3.0};
-
     // Random device
     std::random_device rd;
 
+    // Arguments
+    Args args = parse_args(argc, argv);
+    std::cout << args << std::endl;
+
     // Generate initial population
     Population population =
-        ramped_half_and_half(env, rd, population_size, initial_depth, p_term);
+        ramped_half_and_half(env, rd, args.population_size, args.initial_depth, args.p_term);
 
     for (Individual& individual: population) {
         cout << individual.tree() << endl;

@@ -3,6 +3,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 bin_PROGRAMS = symbolic
 symbolic_SOURCES = symbolic.cpp \
+	args.hpp \
+	args.cpp \
 	individual.hpp \
 	individual.cpp \
 	fitness.hpp \
