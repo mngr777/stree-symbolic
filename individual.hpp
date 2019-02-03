@@ -8,10 +8,16 @@
 
 class Individual {
 public:
-    Individual(stree::Tree tree)
+    Individual(stree::Tree&& tree)
         :tree_(std::move(tree)),
          fitness_(0.0),
          has_fitness_(false) {}
+
+    Individual(const Individual&) = delete;
+    Individual(Individual&&) = default;
+
+    Individual& operator=(const Individual&) = delete;
+    Individual& operator=(Individual&&) = default;
 
     stree::Tree& tree() {
         return tree_;
