@@ -1,10 +1,10 @@
 #ifndef INDIVIDUAL_HPP_
 #define INDIVIDUAL_HPP_
 
-#include <random>
 #include <utility>
 #include <stree/stree.hpp>
 #include "fitness.hpp"
+#include "random.hpp"
 
 class Individual {
 public:
@@ -52,7 +52,7 @@ using Group = std::vector<Individual>;
 
 Population ramped_half_and_half(
     stree::Environment& env,
-    std::random_device& rd,
+    Random& rd,
     unsigned n,
     unsigned depth,
     float p_term = 0.2);

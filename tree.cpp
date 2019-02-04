@@ -4,19 +4,13 @@
 
 // TODO: replace random_device
 
-const stree::Symbol* random_term(
-    const stree::Environment& env,
-    std::random_device& rd)
-{
+const stree::Symbol* random_term(const stree::Environment& env, Random& rd) {
     assert(env.terminal_num() > 0);
     std::uniform_int_distribution<unsigned> dist(0, env.terminal_num() - 1);
     return env.terminal(dist(rd));
 }
 
-const stree::Symbol* random_nonterm(
-    const stree::Environment& env,
-    std::random_device& rd)
-{
+const stree::Symbol* random_nonterm(const stree::Environment& env, Random& rd) {
     assert(env.nonterminal_num() > 0);
     std::uniform_int_distribution<unsigned> dist(0, env.nonterminal_num() - 1);
     return env.nonterminal(dist(rd));
@@ -26,12 +20,7 @@ const stree::Symbol* random_nonterm(
     assert(depth > 0 && "Tree depth should be > 0");                    \
     assert(env.terminal_num() > 0 && "Cannot grow a tree without terminals"); \
 
-stree::Tree grow(
-    stree::Environment& env,
-    std::random_device& rd,
-    unsigned depth,
-    float p_term)
-{
+stree::Tree grow(stree::Environment& env, Random& rd, unsigned depth, float p_term) {
     CHECK_CAN_GROW(env, depth);
 
     // Get random symbol
@@ -53,11 +42,7 @@ stree::Tree grow(
     return tree;
 }
 
-stree::Tree full(
-    stree::Environment& env,
-    std::random_device& rd,
-    unsigned depth)
-{
+stree::Tree full(stree::Environment& env, Random& rd, unsigned depth) {
     CHECK_CAN_GROW(env, depth);
 
     // Get random symbol

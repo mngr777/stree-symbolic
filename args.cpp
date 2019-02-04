@@ -1,4 +1,5 @@
 #include "args.hpp"
+#include <random>
 #include <string>
 #include <getopt.h>
 
@@ -9,6 +10,7 @@ Args make_args_default() {
     // TODO: config file
     args.population_size = 100;
     args.initial_depth   = 5;
+    args.prng_seed       = -1;
     args.p_term          = 0.2;
     args.max_generation  = 500;
     args.goal            = 0.1;
@@ -22,6 +24,7 @@ std::ostream& operator<<(std::ostream& os, const Args& args) {
     return os
         << "Population size: " << args.population_size << std::endl
         << "Initial tree depth: " << args.initial_depth << std::endl
+        << "PRNG seed: " << args.prng_seed << std::endl
         << "P(terminal), generation: " << args.p_term << std::endl
         << "Max generation number: " << args.max_generation << std::endl
         << "Fitness goal: " << args.goal << std::endl
@@ -34,6 +37,7 @@ Args parse_args(int argc, char** argv) {
     static struct option options[] = {
         {"population-size", required_argument, 0, 'p'},
         {"initial-depth", required_argument, 0, 'd'},
+        {"prng-seed", required_argument, 0, 's'},
         {"p-term", required_argument, 0, 't'},
         {"max-generation", required_argument, 0, 'n'},
         {"goal", required_argument, 0, 'g'},
@@ -42,13 +46,16 @@ Args parse_args(int argc, char** argv) {
     };
     int option_index = 0;
     char c = -1;
-    while ((c = getopt_long(argc, argv, "", options, &option_index)) != -1) {
+    while ((c = getopt_long(argc, argv, "p:d:s:t:n:g:f:", options, &option_index)) != -1) {
         switch (c) {
             case 'p':
                 args.population_size = std::stoul(optarg);
                 break;
             case 'd':
                 args.initial_depth = std::stoul(optarg);
+                break;
+            case 's':
+                args.prng_seed = std::stoul(optarg);
                 break;
             case 't':
                 args.p_term = std::stof(optarg);
@@ -68,6 +75,10 @@ Args parse_args(int argc, char** argv) {
             case '?':
                 break;
         }
+    }
+
+    if (args.prng_seed == -1) {
+        args.prng_seed = std::random_device{}();
     }
 
     return args;

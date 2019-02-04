@@ -2,11 +2,7 @@
 
 // TODO: replace random_device
 
-stree::Subtree random_subtree(
-    std::random_device& rd,
-    stree::Tree& tree,
-    float p_term = 0.2)
-{
+stree::Subtree random_subtree( Random& rd, stree::Tree& tree, float p_term) {
     assert(tree.is_valid());
     bool use_term = (tree.describe().nonterm_num == 0)
         || std::uniform_real_distribution<float>{0, 1.0}(rd);
@@ -19,7 +15,7 @@ stree::Subtree random_subtree(
 }
 
 std::vector<stree::Tree> crossover_one_point(
-    std::random_device& rd,
+    Random& rd,
     stree::Tree tree1,
     stree::Tree tree2,
     float p_term)

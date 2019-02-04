@@ -3,10 +3,12 @@
 
 #include <ostream>
 #include "fitness.hpp"
+#include "random.hpp"
 
 struct Args {
     unsigned population_size;
     unsigned initial_depth;
+    Random::result_type prng_seed;
     float p_term;
     unsigned max_generation;
     Fitness goal;

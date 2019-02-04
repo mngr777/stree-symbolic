@@ -1,5 +1,4 @@
 #include <iostream>
-#include <random>
 #include <string>
 #include <stree/stree.hpp>
 #include "args.hpp"
@@ -22,12 +21,12 @@ int main(int argc, char** argv) {
     env.add_function("*", 2, &::multiply);
     env.add_function("%", 2, &::divide);
 
-    // Random device
-    std::random_device rd;
-
     // Arguments
     Args args = parse_args(argc, argv);
     std::cout << args << std::endl;
+
+    // PRNG
+    RandomMt19937 rd(args.prng_seed);
 
     // Generate initial population
     Population population =

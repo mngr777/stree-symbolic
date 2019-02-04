@@ -3,7 +3,7 @@
 
 Population ramped_half_and_half(
     stree::Environment& env,
-    std::random_device& rd,
+    Random& rd,
     unsigned n,
     unsigned depth,
     float p_term)
