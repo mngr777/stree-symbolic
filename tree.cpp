@@ -2,8 +2,6 @@
 #include <algorithm>
 #include <cassert>
 
-// TODO: replace random_device
-
 const stree::Symbol* random_term(const stree::Environment& env, Random& rd) {
     assert(env.terminal_num() > 0);
     std::uniform_int_distribution<unsigned> dist(0, env.terminal_num() - 1);

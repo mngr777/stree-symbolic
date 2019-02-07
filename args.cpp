@@ -111,6 +111,7 @@ Args parse_args(int argc, char** argv) {
         }
     } catch (std::invalid_argument& e) {
         // re-throw with argument name
+        // ?? is option_index always valid?
         throw std::invalid_argument(
             std::string("`") + options[option_index].name + "': "
             + e.what());
