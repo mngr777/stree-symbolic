@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <string>
 #include <stree/stree.hpp>
@@ -19,9 +20,15 @@ std::string positional_name(unsigned n);
 
 int main(int argc, char** argv) {
     // Arguments
-    Args args = parse_args(argc, argv);
-    if (!validate_args(args))
-        usage();
+    Args args;
+    try {
+        args = parse_args(argc, argv);
+        if (!validate_args(args))
+            usage();
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        std::exit(2);
+    }
     std::cout << args << std::endl;
 
     // Environment
@@ -40,7 +47,7 @@ int main(int argc, char** argv) {
         load_fitness_cases(args.fitness_cases_filename, args.param_num);
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
-        std::exit(2);
+        std::exit(3);
     }
 
     // PRNG
