@@ -13,6 +13,7 @@ struct FitnessCase {
 using FitnessCaseList = std::vector<FitnessCase>;
 using Fitness = float;
 
+FitnessCaseList load_fitness_cases(const std::string& filename, unsigned param_num);
 FitnessCaseList load_fitness_cases(std::istream& is, unsigned param_num);
 
 // TODO: add fitness combine function as a parameter

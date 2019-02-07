@@ -1,8 +1,53 @@
 #include "fitness.hpp"
 #include <cmath>
+#include <fstream>
+#include <stdexcept>
 #include <string>
 
 // NOTE: assuming value is floating point number
+
+namespace {
+
+FitnessCase read_line(const std::string line, unsigned param_num);
+
+} // namespace
+
+
+FitnessCaseList load_fitness_cases(const std::string& filename, unsigned param_num) {
+    std::ifstream is(filename);
+    return load_fitness_cases(is, param_num);
+}
+
+FitnessCaseList load_fitness_cases(std::istream& is,  unsigned param_num) {
+    FitnessCaseList case_list;
+    std::string line;
+    unsigned linum = 0;
+    while (std::getline(is, line)) {
+        ++linum;
+        if (line.empty() || line[0] == '#')
+            continue;
+        try {
+            case_list.push_back(read_line(line, param_num));
+        } catch (std::exception& e) {
+            throw std::invalid_argument(
+                std::string(e.what()) + "\nline number: " + std::to_string(linum));
+        }
+    }
+    return case_list;
+}
+
+Fitness evaluate(const stree::Tree& tree, const FitnessCaseList& fitness_cases) {
+    float fitness = 0.0;
+    for (const FitnessCase& fitness_case : fitness_cases)
+        fitness += evaluate(tree, fitness_case);
+    return fitness;
+}
+
+Fitness evaluate(const stree::Tree& tree, const FitnessCase& fitness_case) {
+    stree::Value answer = stree::eval(tree, fitness_case.params);
+    return std::fabs(answer - fitness_case.answer);
+}
+
 
 namespace {
 
@@ -25,24 +70,3 @@ FitnessCase read_line(const std::string line, unsigned param_num) {
 }
 
 } // namespace
-
-FitnessCaseList load_fitness_cases(std::istream& is,  unsigned param_num) {
-    FitnessCaseList case_list;
-    std::string line;
-    while (std::getline(is, line)) {
-        case_list.push_back(read_line(line, param_num));
-    }
-    return case_list;
-}
-
-Fitness evaluate(const stree::Tree& tree, const FitnessCaseList& fitness_cases) {
-    float fitness = 0.0;
-    for (const FitnessCase& fitness_case : fitness_cases)
-        fitness += evaluate(tree, fitness_case);
-    return fitness;
-}
-
-Fitness evaluate(const stree::Tree& tree, const FitnessCase& fitness_case) {
-    stree::Value answer = stree::eval(tree, fitness_case.params);
-    return std::fabs(answer - fitness_case.answer);
-}
