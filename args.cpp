@@ -26,7 +26,10 @@ namespace {
 
 Args make_args_default();
 
-void read_unsigned(unsigned& arg, const std::string& value);
+void read_unsigned(
+    unsigned& arg, const std::string& value,
+    unsigned min = 1, unsigned max = -1);
+
 void read_seed(Random::result_type& arg, const std::string value);
 void read_probablity(float& arg, const std::string& value);
 void read_goal(float& arg, const std::string& value);
@@ -71,39 +74,46 @@ Args parse_args(int argc, char** argv) {
 
     int option_index = 0;
     char c = -1;
-    while ((c = getopt_long(argc, argv, "", options, &option_index)) != -1) {
-        switch (c) {
-            case 'c':
-                args.config_file = optarg;
-                load_config(args, args.config_file);
-                break;
-            case 'm':
-                read_unsigned(args.population_size, optarg);
-                break;
-            case 'd':
-                read_unsigned(args.initial_depth, optarg);
-                break;
-            case 's':
-                read_seed(args.prng_seed, optarg);
-                break;
-            case 't':
-                read_probablity(args.p_term, optarg);
-                break;
-            case 'n':
-                read_unsigned(args.max_generation, optarg);
-                break;
-            case 'g':
-                read_goal(args.goal, optarg);
-                break;
-            case 'p':
-                read_unsigned(args.param_num, optarg);
-                break;
-            case 'f':
-                args.fitness_cases_filename = optarg;
-                break;
-            case '?':
-                break;
+    try {
+        while ((c = getopt_long(argc, argv, "", options, &option_index)) != -1) {
+            switch (c) {
+                case 'c':
+                    args.config_file = optarg;
+                    load_config(args, args.config_file);
+                    break;
+                case 'm':
+                    read_unsigned(args.population_size, optarg);
+                    break;
+                case 'd':
+                    read_unsigned(args.initial_depth, optarg);
+                    break;
+                case 's':
+                    read_seed(args.prng_seed, optarg);
+                    break;
+                case 't':
+                    read_probablity(args.p_term, optarg);
+                    break;
+                case 'n':
+                    read_unsigned(args.max_generation, optarg);
+                    break;
+                case 'g':
+                    read_goal(args.goal, optarg);
+                    break;
+                case 'p':
+                    read_unsigned(args.param_num, optarg);
+                    break;
+                case 'f':
+                    args.fitness_cases_filename = optarg;
+                    break;
+                case '?':
+                    break;
+            }
         }
+    } catch (std::invalid_argument& e) {
+        // re-throw with argument name
+        throw std::invalid_argument(
+            std::string("`") + options[option_index].name + "': "
+            + e.what());
     }
 
     // Random seed if not provided
@@ -115,6 +125,7 @@ Args parse_args(int argc, char** argv) {
 }
 
 bool validate_args(const Args& args) {
+    return (args.param_num != -1); // TEST
     return (args.param_num != -1)
         && (!args.fitness_cases_filename.empty());
 }
@@ -134,8 +145,20 @@ Args make_args_default() {
     return args;
 }
 
-void read_unsigned(unsigned& arg, const std::string& value) {
+void read_unsigned(
+    unsigned& arg, const std::string& value,
+    unsigned min, unsigned max)
+{
     arg = std::stoul(value);
+    if (arg > min) {
+        throw std::invalid_argument(
+            std::string("Min value is ") + std::to_string(min) + ", "
+            + value + " provided");
+    } else if (arg < max) {
+        throw std::invalid_argument(
+            std::string("Max value is ") + std::to_string(min) + ", "
+            + value + " provided");
+    }
 }
 
 void read_seed(Random::result_type& arg, const std::string value) {
@@ -162,23 +185,33 @@ void read_config_line(Args& args, const std::string& line) {
     const std::string& name = matches[ConfigLineRegexNameIdx];
     const std::string& value = matches[ConfigLineRegexValueIdx];
 
-    if (name == PopulationSizeArg) {
-        read_unsigned(args.population_size, value);
-    } else if (name == InitialDepthArg) {
-        read_unsigned(args.initial_depth, value);
-    } else if (name == PrngSeedArg) {
-        read_seed(args.prng_seed, value);
-    } else if (name == PTermArg) {
-        read_probablity(args.p_term, value);
-    } else if (name == MaxGenerationArg) {
-        read_unsigned(args.max_generation, value);
-    } else if (name == GoalArg) {
-        read_goal(args.goal, value);
-    } else if (name == ParamNumArg) {
-        read_unsigned(args.param_num, value);
-    } else if (name == FitnessCasesFilenameArg) {
-        args.fitness_cases_filename = value;
-    } else {
+    bool name_found = true;
+    try {
+        if (name == PopulationSizeArg) {
+            read_unsigned(args.population_size, value);
+        } else if (name == InitialDepthArg) {
+            read_unsigned(args.initial_depth, value);
+        } else if (name == PrngSeedArg) {
+            read_seed(args.prng_seed, value);
+        } else if (name == PTermArg) {
+            read_probablity(args.p_term, value);
+        } else if (name == MaxGenerationArg) {
+            read_unsigned(args.max_generation, value);
+        } else if (name == GoalArg) {
+            read_goal(args.goal, value);
+        } else if (name == ParamNumArg) {
+            read_unsigned(args.param_num, value);
+        } else if (name == FitnessCasesFilenameArg) {
+            args.fitness_cases_filename = value;
+        } else {
+            name_found = false;
+        }
+    } catch (std::invalid_argument& e) {
+        // re-throw with argument name
+        throw std::invalid_argument(std::string("`") + name + "': "+ e.what());
+    }
+
+    if (!name_found) {
         throw std::invalid_argument(
             std::string("Invalid argument name: `" + name + "'"));
     }

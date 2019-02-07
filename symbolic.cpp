@@ -33,6 +33,7 @@ int main(int argc, char** argv) {
     env.add_function("%", 2, &::divide);
     for (unsigned n = 0; n < args.param_num; ++n)
         env.add_positional(positional_name(n), n);
+    // TODO: random value generator
 
     // Load fitness cases
     try {
@@ -43,6 +44,7 @@ int main(int argc, char** argv) {
     }
 
     // PRNG
+    // TODO: selectable PRNG
     RandomMt19937 rd(args.prng_seed);
 
     // Generate initial population
@@ -72,7 +74,7 @@ std::string positional_name(unsigned n) {
     std::string name({ch});
     unsigned mult = n / letter_num;
     if (mult > 0) {
-        name += std::to_string(n);
+        name += std::to_string(mult);
     }
     return name;
 }
