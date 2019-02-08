@@ -3,9 +3,10 @@
 
 Population ramped_half_and_half(
     stree::Environment& env,
-    Random& rd,
     unsigned n,
     unsigned depth,
+    Random& rd,
+    RandomValue* rv,
     float p_term)
 {
     assert(n > 0 && "Population size should be > 0");
@@ -13,9 +14,9 @@ Population ramped_half_and_half(
     Population population;
     unsigned i = 0;
     for (; i < n / 2; ++i)
-        population.emplace_back(grow(env, rd, depth, p_term));
+        population.emplace_back(grow(env, depth, rd, rv, p_term));
     for (; i < n; ++i)
-        population.emplace_back(full(env, rd, depth));
+        population.emplace_back(full(env, depth, rd, rv));
     return population;
 }
 

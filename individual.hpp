@@ -52,9 +52,10 @@ using Group = std::vector<Individual>;
 
 Population ramped_half_and_half(
     stree::Environment& env,
-    Random& rd,
     unsigned n,
     unsigned depth,
+    Random& rd,
+    RandomValue* rv = nullptr,
     float p_term = 0.2);
 
 void evaluate(Individual& individual, const FitnessCaseList& fitness_cases);

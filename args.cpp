@@ -151,13 +151,13 @@ void read_unsigned(
     unsigned min, unsigned max)
 {
     arg = std::stoul(value);
-    if (arg > min) {
+    if (min > 0 && arg < min) {
         throw std::invalid_argument(
             std::string("Min value is ") + std::to_string(min) + ", "
             + value + " provided");
-    } else if (arg < max) {
+    } else if (max < -1 && arg > max) {
         throw std::invalid_argument(
-            std::string("Max value is ") + std::to_string(min) + ", "
+            std::string("Max value is ") + std::to_string(max) + ", "
             + value + " provided");
     }
 }

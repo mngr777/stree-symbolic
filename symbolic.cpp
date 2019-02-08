@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     env.add_function("%", 2, &::divide);
     for (unsigned n = 0; n < args.param_num; ++n)
         env.add_positional(positional_name(n), n);
-    // TODO: random value generator
+    env.add_constant(RandomValueSymbolName);
 
     // Load fitness cases
     try {
@@ -54,9 +54,17 @@ int main(int argc, char** argv) {
     // TODO: selectable PRNG
     RandomMt19937 rd(args.prng_seed);
 
+    // Random value generator
+    RandomValue rv(rd, 0.0, 1.0);
+
     // Generate initial population
-    Population population =
-        ramped_half_and_half(env, rd, args.population_size, args.initial_depth, args.p_term);
+    Population population = ramped_half_and_half(
+        env,
+        args.population_size,
+        args.initial_depth,
+        rd,
+        &rv,
+        args.p_term);
 
     for (Individual& individual: population) {
         std::cout << individual.tree() << std::endl;
