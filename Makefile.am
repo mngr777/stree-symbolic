@@ -1,7 +1,8 @@
 AUTOMAKE_OPTIONS = subdir-objects
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = symbolic
+bin_PROGRAMS = symbolic generate_test_data
+
 symbolic_SOURCES = symbolic.cpp \
 	args.hpp \
 	args.cpp \
@@ -18,3 +19,8 @@ symbolic_SOURCES = symbolic.cpp \
 	tree.hpp \
 	tree.cpp
 symbolic_LDADD = -lstree
+
+generate_test_data_SOURCES = generate_test_data.cpp \
+	functions.hpp \
+	functions.cpp
+generate_test_data_LDADD = -lstree

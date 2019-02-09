@@ -33,10 +33,16 @@ int main(int argc, char** argv) {
     // Environment
     stree::Environment env;
     // TODO: custom function list from args
-    env.add_function("+", 2, &::plus);
-    env.add_function("-", 2, &::minus);
-    env.add_function("*", 2, &::multiply);
-    env.add_function("%", 2, &::divide);
+    env.add_function("+", 2, &::fun::plus);
+    env.add_function("+3", 3, &::fun::plus);
+    env.add_function("-", 2, &::fun::minus);
+    env.add_function("-3", 3, &::fun::minus);
+    env.add_function("*", 2, &::fun::multiply);
+    env.add_function("*3", 3, &::fun::multiply);
+    env.add_function("%", 2, &::fun::divide);
+    env.add_function("square", 1, &::fun::square);
+    env.add_function("cube", 1, &::fun::cube);
+    env.add_function("^", 2, &::fun::divide);
     for (unsigned n = 0; n < args.param_num; ++n)
         env.add_positional(positional_name(n), n);
     env.add_constant(RandomValueSymbolName);

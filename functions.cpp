@@ -1,6 +1,9 @@
 #include "functions.hpp"
+#include <cmath>
 #include <functional>
 #include <numeric>
+
+namespace fun {
 
 stree::Value plus(const stree::Arguments& args, stree::DataPtr) {
     return std::accumulate(args.begin(), args.end(), stree::Value{});
@@ -22,7 +25,7 @@ stree::Value minus(const stree::Arguments& args, stree::DataPtr) {
 stree::Value multiply(const stree::Arguments& args, stree::DataPtr) {
     return std::accumulate(
         args.begin(), args.end(),
-        stree::Value{},
+        1,
         std::multiplies<stree::Value>());
 }
 
@@ -38,3 +41,22 @@ stree::Value divide(const stree::Arguments& args, stree::DataPtr) {
     }
     return result;
 }
+
+stree::Value square(const stree::Arguments& args, stree::DataPtr) {
+    assert(args.size() > 0);
+    const stree::Value& arg = args[0];
+    return arg * arg;
+}
+
+stree::Value cube(const stree::Arguments& args, stree::DataPtr) {
+    assert(args.size() > 0);
+    const stree::Value& arg = args[0];
+    return arg * arg * arg;
+}
+
+stree::Value pow(const stree::Arguments& args, stree::DataPtr) {
+    assert(args.size() > 1);
+    return static_cast<stree::Value>(std::pow(args[0], args[1]));
+}
+
+} // namespace fun
