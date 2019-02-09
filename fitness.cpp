@@ -14,12 +14,16 @@ FitnessCase read_line(const std::string line, unsigned param_num);
 
 
 FitnessCaseList load_fitness_cases(const std::string& filename, unsigned param_num) {
-    std::ifstream is(filename);
+    std::ifstream is(filename, std::ifstream::out);
+    if (!is.is_open())
+        throw std::invalid_argument(
+            std::string("Cannot open fitness case file `") + filename + "'");
     return load_fitness_cases(is, param_num);
 }
 
 FitnessCaseList load_fitness_cases(std::istream& is,  unsigned param_num) {
     FitnessCaseList case_list;
+    // Process each line
     std::string line;
     unsigned linum = 0;
     while (std::getline(is, line)) {
@@ -33,6 +37,10 @@ FitnessCaseList load_fitness_cases(std::istream& is,  unsigned param_num) {
                 std::string(e.what()) + "\nline number: " + std::to_string(linum));
         }
     }
+    // Check if list is empty
+    if (case_list.empty())
+        throw std::invalid_argument("Fitness case file is empty");
+
     return case_list;
 }
 

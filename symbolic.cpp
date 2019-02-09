@@ -23,8 +23,7 @@ int main(int argc, char** argv) {
     Args args;
     try {
         args = parse_args(argc, argv);
-        if (!validate_args(args))
-            usage();
+        validate_args(args);
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
         std::exit(2);

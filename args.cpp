@@ -125,10 +125,16 @@ Args parse_args(int argc, char** argv) {
     return args;
 }
 
-bool validate_args(const Args& args) {
-    return (args.param_num != -1); // TEST
-    return (args.param_num != -1)
-        && (!args.fitness_cases_filename.empty());
+void validate_args(const Args& args) {
+    std::string message;
+    // param-num
+    if (args.param_num == -1)
+        message += "--param-num argument is required\n";
+    // fitness-cases-file
+    if (args.fitness_cases_filename.empty())
+        message += "--fitness-cases-file argument is required\n";
+    if (!message.empty())
+        throw std::invalid_argument(message);
 }
 
 

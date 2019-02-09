@@ -21,6 +21,6 @@ struct Args {
 std::ostream& operator<<(std::ostream& os, const Args& args);
 
 Args parse_args(int argc, char** argv);
-bool validate_args(const Args& args);
+void validate_args(const Args& args);
 
 #endif
