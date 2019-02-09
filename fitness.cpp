@@ -8,7 +8,7 @@
 
 namespace {
 
-FitnessCase read_line(const std::string line, unsigned param_num);
+FitnessCase read_line(const std::string& line, unsigned param_num);
 
 } // namespace
 
@@ -34,7 +34,9 @@ FitnessCaseList load_fitness_cases(std::istream& is,  unsigned param_num) {
             case_list.push_back(read_line(line, param_num));
         } catch (std::exception& e) {
             throw std::invalid_argument(
-                std::string(e.what()) + "\nline number: " + std::to_string(linum));
+                std::string(e.what())
+                + "\nline number: " + std::to_string(linum) + "\n"
+                + line);
         }
     }
     // Check if list is empty
@@ -59,13 +61,17 @@ Fitness evaluate(const stree::Tree& tree, const FitnessCase& fitness_case) {
 
 namespace {
 
-FitnessCase read_line(const std::string line, unsigned param_num) {
+FitnessCase read_line(const std::string& line, unsigned param_num) {
     FitnessCase fitness_case;
     std::string::size_type pos = 0;
-    for (unsigned i = 0; i < param_num + 1; ++param_num) {
+    for (unsigned i = 0; i < param_num + 1; ++i) {
+        if (pos + 1 > line.size())
+            throw std::invalid_argument("Not enough parameters");
+
         // read value
         std::string::size_type pos_inc;
-        stree::Value value = std::stod(line.substr(pos), &pos_inc);
+        stree::Value value = static_cast<stree::Value>(
+            std::stod(line.substr(pos), &pos_inc));
         pos += pos_inc;
         // add to fitness case
         if (i < param_num) {
