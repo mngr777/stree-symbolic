@@ -48,8 +48,9 @@ int main(int argc, char** argv) {
     env.add_constant(RandomValueSymbolName);
 
     // Load fitness cases
+    FitnessCaseList fitness_cases;
     try {
-        load_fitness_cases(args.fitness_cases_filename, args.param_num);
+        fitness_cases = load_fitness_cases(args.fitness_cases_filename, args.param_num);
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
         std::exit(3);
@@ -72,7 +73,9 @@ int main(int argc, char** argv) {
         args.p_term);
 
     for (Individual& individual: population) {
-        std::cout << individual.tree() << std::endl;
+        evaluate(population, fitness_cases);
+        std::cout << "[" << individual.fitness() << "] "
+                  <<  individual.tree() << std::endl;
     }
 
     return 0;
