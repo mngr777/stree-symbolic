@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
@@ -104,12 +105,15 @@ int main(int argc, char** argv) {
     }
 
     std::cout << min_fitness << std::endl;
-
-    // for (Individual& individual: population) {
-    //     evaluate(population, fitness_cases);
-    //     std::cout << "[" << individual.fitness() << "] "
-    //               <<  individual.tree() << std::endl;
-    // }
+    {
+        auto it = std::find_if(
+            population.begin(), population.end(),
+            [min_fitness](const Individual& individual) {
+                return individual.fitness() == min_fitness;
+            });
+        assert(it != population.end());
+        std::cout << it->tree() << std::endl;
+    }
 
     return 0;
 }
