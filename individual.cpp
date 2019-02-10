@@ -1,4 +1,8 @@
 #include "individual.hpp"
+#include <algorithm>
+#include <cassert>
+#include <limits>
+#include <random>
 #include "tree.hpp"
 
 Population ramped_half_and_half(
@@ -20,13 +24,41 @@ Population ramped_half_and_half(
     return population;
 }
 
-void evaluate(Individual& individual, const FitnessCaseList& fitness_cases) {
+Fitness evaluate(Individual& individual, const FitnessCaseList& fitness_cases) {
     Fitness fitness = evaluate(individual.tree(), fitness_cases);
     individual.set_fitness(fitness);
+    return fitness;
 }
 
-void evaluate(Population& population, const FitnessCaseList& fitness_cases) {
-    for (auto& individual : population)
+Fitness evaluate(Population& population, const FitnessCaseList& fitness_cases) {
+    Fitness min_fitness = std::numeric_limits<Fitness>::max();
+    for (auto& individual : population) {
         if (!individual.has_fitness())
-            evaluate(individual, fitness_cases);
+            min_fitness = std::min(
+                min_fitness,
+                evaluate(individual, fitness_cases));
+    }
+    return min_fitness;
+}
+
+GroupIdx random_group(const Population& population, unsigned size, Random& rd) {
+    assert(size < population.size());
+    std::uniform_int_distribution<IndivIdx> dist(0, population.size() - 1);
+    GroupIdx group;
+    while (group.size() < size) {
+        IndivIdx idx = dist(rd);
+        if (group.count(idx) == 0) {
+            group.insert(idx);
+        }
+    }
+    return group;
+}
+
+IndivIdx tournament(const Population& population, const GroupIdx& group) {
+    auto it =  std::min_element(
+        group.begin(), group.end(),
+        [&population](IndivIdx idx1, IndivIdx idx2) {
+            return population[idx1].fitness() < population[idx2].fitness();
+        });
+    return *it;
 }

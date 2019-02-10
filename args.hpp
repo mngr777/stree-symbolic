@@ -7,6 +7,7 @@
 #include "random.hpp"
 
 struct Args {
+    bool show_help;
     std::string config_file;
     unsigned population_size;
     unsigned initial_depth;

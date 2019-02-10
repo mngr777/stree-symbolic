@@ -2,11 +2,13 @@
 #include <exception>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <stree/stree.hpp>
 #include "args.hpp"
 #include "individual.hpp"
 #include "fitness.hpp"
 #include "functions.hpp"
+#include "genetic.hpp"
 #include "tree.hpp"
 
 namespace {
@@ -23,6 +25,8 @@ int main(int argc, char** argv) {
     Args args;
     try {
         args = parse_args(argc, argv);
+        if (args.show_help)
+            usage();
         validate_args(args);
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
@@ -72,11 +76,40 @@ int main(int argc, char** argv) {
         &rv,
         args.p_term);
 
-    for (Individual& individual: population) {
-        evaluate(population, fitness_cases);
-        std::cout << "[" << individual.fitness() << "] "
-                  <<  individual.tree() << std::endl;
+    unsigned tournament_size = 2;
+    Fitness min_fitness = evaluate(population, fitness_cases);
+    for (
+        unsigned generation = 1;
+        generation <= args.max_generation && min_fitness > args.goal;
+        ++generation)
+    {
+        Population next_population;
+        while (next_population.size() < population.size()) {
+            IndivIdx idx1 = tournament(
+                population,
+                random_group(population, tournament_size, rd));
+            IndivIdx idx2 = tournament(
+                population,
+                random_group(population, tournament_size, rd));
+            auto offspring = crossover_one_point(
+                rd,
+                population[idx1].tree(),
+                population[idx2].tree());
+            for (stree::Tree& tree : offspring) {
+                next_population.emplace_back(std::move(tree));
+            }
+        }
+        std::swap(population, next_population);
+        min_fitness = evaluate(population, fitness_cases);
     }
+
+    std::cout << min_fitness << std::endl;
+
+    // for (Individual& individual: population) {
+    //     evaluate(population, fitness_cases);
+    //     std::cout << "[" << individual.fitness() << "] "
+    //               <<  individual.tree() << std::endl;
+    // }
 
     return 0;
 }

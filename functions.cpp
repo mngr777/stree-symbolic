@@ -1,4 +1,5 @@
 #include "functions.hpp"
+#include <cassert>
 #include <cmath>
 #include <functional>
 #include <numeric>

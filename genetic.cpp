@@ -1,8 +1,9 @@
 #include "genetic.hpp"
+#include <cassert>
 
 // TODO: replace random_device
 
-stree::Subtree random_subtree( Random& rd, stree::Tree& tree, float p_term) {
+stree::Subtree random_subtree(Random& rd, stree::Tree& tree, float p_term) {
     assert(tree.is_valid());
     bool use_term = (tree.describe().nonterm_num == 0)
         || std::uniform_real_distribution<float>{0, 1.0}(rd);
@@ -23,5 +24,5 @@ std::vector<stree::Tree> crossover_one_point(
     stree::Subtree subtree1 = random_subtree(rd, tree1, p_term);
     stree::Subtree subtree2 = random_subtree(rd, tree2, p_term);
     subtree1.swap(subtree2);
-    return std::vector<stree::Tree>({tree1, tree2});
+    return std::vector<stree::Tree>({std::move(tree1), std::move(tree2)});
 }

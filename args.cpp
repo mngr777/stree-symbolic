@@ -7,11 +7,14 @@
 #include <string>
 #include <getopt.h>
 
+static unsigned UnsignedNoValue = std::numeric_limits<unsigned>::max();
+
 // param-name = value
 static char ConfigLineRegex[] = "^\\s*([a-z-]+)\\s*(=\\s*(.*))?\\s*$";
 static unsigned ConfigLineRegexNameIdx = 1;
 static unsigned ConfigLineRegexValueIdx = 3;
 
+static char ShowHelpArg[]             = "help";
 static char ConfigFileArg[]           = "config-file";
 static char PopulationSizeArg[]       = "population-size";
 static char InitialDepthArg[]         = "initial-depth";
@@ -28,7 +31,7 @@ Args make_args_default();
 
 void read_unsigned(
     unsigned& arg, const std::string& value,
-    unsigned min = 1, unsigned max = -1);
+    unsigned min = UnsignedNoValue, unsigned max = UnsignedNoValue);
 
 void read_seed(Random::result_type& arg, const std::string value);
 void read_probablity(float& arg, const std::string& value);
@@ -60,6 +63,7 @@ Args parse_args(int argc, char** argv) {
 
     // TODO: replace literals with Param* constants
     static struct option options[] = {
+        {ShowHelpArg, no_argument, 0, 'h'},
         {ConfigFileArg, required_argument, 0, 'c'},
         {PopulationSizeArg, required_argument, 0, 'm'},
         {InitialDepthArg, required_argument, 0, 'd'},
@@ -77,6 +81,9 @@ Args parse_args(int argc, char** argv) {
     try {
         while ((c = getopt_long(argc, argv, "", options, &option_index)) != -1) {
             switch (c) {
+                case 'h':
+                    args.show_help = true;
+                    break;
                 case 'c':
                     args.config_file = optarg;
                     load_config(args, args.config_file);
@@ -117,9 +124,11 @@ Args parse_args(int argc, char** argv) {
             + e.what());
     }
 
-    // Random seed if not provided
-    if (args.prng_seed == -1) {
-        args.prng_seed = std::random_device{}();
+    if (!args.show_help) {
+        // Random seed if not provided
+        if (args.prng_seed == UnsignedNoValue) {
+            args.prng_seed = std::random_device{}();
+        }
     }
 
     return args;
@@ -128,7 +137,7 @@ Args parse_args(int argc, char** argv) {
 void validate_args(const Args& args) {
     std::string message;
     // param-num
-    if (args.param_num == -1)
+    if (args.param_num == UnsignedNoValue)
         message += "--param-num argument is required\n";
     // fitness-cases-file
     if (args.fitness_cases_filename.empty())
@@ -142,13 +151,14 @@ namespace {
 
 Args make_args_default() {
     Args args;
+    args.show_help       = false;
     args.population_size = 100;
     args.initial_depth   = 5;
-    args.prng_seed       = -1;
+    args.prng_seed       = UnsignedNoValue;
     args.p_term          = 0.2;
     args.max_generation  = 500;
     args.goal            = 0.1;
-    args.param_num       = -1;
+    args.param_num       = UnsignedNoValue;
     return args;
 }
 
@@ -157,11 +167,11 @@ void read_unsigned(
     unsigned min, unsigned max)
 {
     arg = std::stoul(value);
-    if (min > 0 && arg < min) {
+    if (min != UnsignedNoValue && arg < min) {
         throw std::invalid_argument(
             std::string("Min value is ") + std::to_string(min) + ", "
             + value + " provided");
-    } else if (max < -1 && arg > max) {
+    } else if (max != UnsignedNoValue && arg > max) {
         throw std::invalid_argument(
             std::string("Max value is ") + std::to_string(max) + ", "
             + value + " provided");

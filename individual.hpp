@@ -1,6 +1,8 @@
 #ifndef INDIVIDUAL_HPP_
 #define INDIVIDUAL_HPP_
 
+#include <functional>
+#include <set>
 #include <utility>
 #include <stree/stree.hpp>
 #include "fitness.hpp"
@@ -9,15 +11,9 @@
 class Individual {
 public:
     Individual(stree::Tree&& tree)
-        :tree_(std::move(tree)),
+        : tree_(std::move(tree)),
          fitness_(0.0),
          has_fitness_(false) {}
-
-    Individual(const Individual&) = delete;
-    Individual(Individual&&) = default;
-
-    Individual& operator=(const Individual&) = delete;
-    Individual& operator=(Individual&&) = default;
 
     stree::Tree& tree() {
         return tree_;
@@ -48,7 +44,8 @@ protected:
 
 
 using Population = std::vector<Individual>;
-using Group = std::vector<Individual>;
+using IndivIdx = Population::size_type;
+using GroupIdx = std::set<IndivIdx>;
 
 Population ramped_half_and_half(
     stree::Environment& env,
@@ -58,9 +55,11 @@ Population ramped_half_and_half(
     RandomValue* rv = nullptr,
     float p_term = 0.2);
 
-void evaluate(Individual& individual, const FitnessCaseList& fitness_cases);
+Fitness evaluate(Individual& individual, const FitnessCaseList& fitness_cases);
+Fitness evaluate(Population& population, const FitnessCaseList& fitness_cases);
 
-// ?? is this function required
-void evaluate(Population& population, const FitnessCaseList& fitness_cases);
+GroupIdx random_group(const Population& population, unsigned size, Random& rd);
+
+IndivIdx tournament(const Population& population, const GroupIdx& group);
 
 #endif
