@@ -11,7 +11,7 @@ stree::Value multiply(const stree::Arguments& args, stree::DataPtr);
 stree::Value divide(const stree::Arguments& args, stree::DataPtr);
 stree::Value square(const stree::Arguments& args, stree::DataPtr);
 stree::Value cube(const stree::Arguments& args, stree::DataPtr);
-stree::Value pow(const stree::Arguments& args, stree::DataPtr);
+stree::Value power(const stree::Arguments& args, stree::DataPtr);
 
 } // namespace fun
 

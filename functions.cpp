@@ -55,7 +55,7 @@ stree::Value cube(const stree::Arguments& args, stree::DataPtr) {
     return arg * arg * arg;
 }
 
-stree::Value pow(const stree::Arguments& args, stree::DataPtr) {
+stree::Value power(const stree::Arguments& args, stree::DataPtr) {
     assert(args.size() > 1);
     return static_cast<stree::Value>(std::pow(args[0], args[1]));
 }

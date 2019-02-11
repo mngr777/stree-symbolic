@@ -24,6 +24,8 @@ static char MaxGenerationArg[]        = "max-generation";
 static char GoalArg[]                 = "goal";
 static char ParamNumArg[]             = "param-num";
 static char FitnessCasesFilenameArg[] = "fitness-cases-file";
+static char TournamentSize[]          = "tournament-size";
+static char CrossoverTournamentSize[] = "crossover-tournament-size";
 
 namespace {
 
@@ -35,7 +37,7 @@ void read_unsigned(
 
 void read_seed(Random::result_type& arg, const std::string value);
 void read_probablity(float& arg, const std::string& value);
-void read_goal(float& arg, const std::string& value);
+void read_goal(Fitness& arg, const std::string& value);
 
 void read_config_line(Args& args, const std::string& line);
 
@@ -55,13 +57,13 @@ std::ostream& operator<<(std::ostream& os, const Args& args) {
         << "Max generation number: " << args.max_generation << std::endl
         << "Fitness goal: " << args.goal << std::endl
         << "Parameter number: "<< args.param_num << std::endl
-        << "Fitness cases file: " << args.fitness_cases_filename << std::endl;
+        << "Fitness cases file: " << args.fitness_cases_filename << std::endl
+        << "Crossover tournament size: " << args.crossover_tournament_size << std::endl;
 }
 
 Args parse_args(int argc, char** argv) {
     Args args = make_args_default();
 
-    // TODO: replace literals with Param* constants
     static struct option options[] = {
         {ShowHelpArg, no_argument, 0, 'h'},
         {ConfigFileArg, required_argument, 0, 'c'},
@@ -73,6 +75,8 @@ Args parse_args(int argc, char** argv) {
         {GoalArg, required_argument, 0, 'g'},
         {ParamNumArg, required_argument, 0, 'p'},
         {FitnessCasesFilenameArg, required_argument, 0, 'f'},
+        {TournamentSize, required_argument, 0, 'o'},
+        {CrossoverTournamentSize, required_argument, 0, 'e'},
         {0, 0, 0, 0}
     };
 
@@ -112,6 +116,12 @@ Args parse_args(int argc, char** argv) {
                 case 'f':
                     args.fitness_cases_filename = optarg;
                     break;
+                case 'o':
+                    read_unsigned(args.tournament_size, optarg, 1);
+                    break;
+                case 'e':
+                    read_unsigned(args.crossover_tournament_size, optarg, 1);
+                    break;
                 case '?':
                     break;
             }
@@ -124,12 +134,16 @@ Args parse_args(int argc, char** argv) {
             + e.what());
     }
 
-    if (!args.show_help) {
-        // Random seed if not provided
-        if (args.prng_seed == UnsignedNoValue) {
-            args.prng_seed = std::random_device{}();
-        }
+    // Random seed if not provided
+    if (args.prng_seed == UnsignedNoValue) {
+        args.prng_seed = std::random_device{}();
     }
+
+    // Ttournament size
+    if (args.crossover_tournament_size == UnsignedNoValue) {
+        args.crossover_tournament_size = args.tournament_size;
+    }
+
 
     return args;
 }
@@ -151,14 +165,16 @@ namespace {
 
 Args make_args_default() {
     Args args;
-    args.show_help       = false;
-    args.population_size = 100;
-    args.initial_depth   = 5;
-    args.prng_seed       = UnsignedNoValue;
-    args.p_term          = 0.2;
-    args.max_generation  = 500;
-    args.goal            = 0.1;
-    args.param_num       = UnsignedNoValue;
+    args.show_help                 = false;
+    args.population_size           = 100;
+    args.initial_depth             = 5;
+    args.prng_seed                 = UnsignedNoValue;
+    args.p_term                    = 0.2;
+    args.max_generation            = 500;
+    args.goal                      = 0.1;
+    args.param_num                 = UnsignedNoValue;
+    args.tournament_size           = 2;
+    args.crossover_tournament_size = UnsignedNoValue;
     return args;
 }
 
@@ -188,8 +204,8 @@ void read_probablity(float& arg, const std::string& value) {
         throw std::invalid_argument("probability must be (0.0, 1.0)");
 }
 
-void read_goal(float& arg, const std::string& value) {
-    arg = std::stof(value);
+void read_goal(Fitness& arg, const std::string& value) {
+    arg = static_cast<Fitness>(std::stod(value));
     if (arg < 0.0)
         throw std::invalid_argument("goal must be >= 0.0");
 }
@@ -220,6 +236,10 @@ void read_config_line(Args& args, const std::string& line) {
             read_unsigned(args.param_num, value);
         } else if (name == FitnessCasesFilenameArg) {
             args.fitness_cases_filename = value;
+        } else if (name == TournamentSize) {
+            read_unsigned(args.tournament_size, value, 1);
+        } else if (name == CrossoverTournamentSize) {
+            read_unsigned(args.crossover_tournament_size, value, 1);
         } else {
             name_found = false;
         }

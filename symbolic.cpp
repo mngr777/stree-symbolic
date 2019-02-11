@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     env.add_function("%", 2, &::fun::divide);
     env.add_function("square", 1, &::fun::square);
     env.add_function("cube", 1, &::fun::cube);
-    env.add_function("^", 2, &::fun::divide);
+    env.add_function("expt", 2, &::fun::power);
     for (unsigned n = 0; n < args.param_num; ++n)
         env.add_positional(positional_name(n), n);
     env.add_constant(RandomValueSymbolName);
@@ -77,7 +77,6 @@ int main(int argc, char** argv) {
         &rv,
         args.p_term);
 
-    unsigned tournament_size = 2;
     Fitness min_fitness = evaluate(population, fitness_cases);
     for (
         unsigned generation = 1;
@@ -88,10 +87,10 @@ int main(int argc, char** argv) {
         while (next_population.size() < population.size()) {
             IndivIdx idx1 = tournament(
                 population,
-                random_group(population, tournament_size, rd));
+                random_group(population, args.crossover_tournament_size, rd));
             IndivIdx idx2 = tournament(
                 population,
-                random_group(population, tournament_size, rd));
+                random_group(population, args.crossover_tournament_size, rd));
             auto offspring = crossover_one_point(
                 rd,
                 population[idx1].tree(),

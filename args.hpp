@@ -17,6 +17,8 @@ struct Args {
     Fitness goal;
     unsigned param_num;
     std::string fitness_cases_filename;
+    unsigned tournament_size;
+    unsigned crossover_tournament_size;
 };
 
 std::ostream& operator<<(std::ostream& os, const Args& args);
