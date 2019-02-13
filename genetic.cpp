@@ -40,7 +40,7 @@ namespace {
 stree::Subtree random_subtree(stree::Tree& tree, Random& rd, float p_term) {
     assert(tree.is_valid());
     bool use_term = (tree.describe().nonterm_num == 0)
-        || std::uniform_real_distribution<float>{0, 1.0}(rd);
+        || std::bernoulli_distribution{p_term}(rd);
     stree::NodeNum n_max = use_term
         ? tree.describe().term_num - 1
         : tree.describe().nonterm_num - 1;

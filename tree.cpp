@@ -46,8 +46,8 @@ stree::Tree grow(
     CHECK_CAN_GROW(env, depth, rv);
 
     // Make random tree
-    std::uniform_real_distribution<float> dist(0, 1.0);
-    bool use_term = (depth == 1 || dist(rd) < p_term || env.nonterminal_num() == 0);
+    std::bernoulli_distribution dist(p_term);
+    bool use_term = (depth == 1 || dist(rd) || env.nonterminal_num() == 0);
     stree::Tree tree(random_tree(env, use_term, rd, rv));
 
     // Grow subtrees
