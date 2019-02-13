@@ -83,6 +83,13 @@ int main(int argc, char** argv) {
         generation <= args.max_generation && min_fitness > args.goal;
         ++generation)
     {
+        // TEST mutation
+        assert(population.size() > 10);
+        GroupIdx mutants = random_group(population, 10, rd);
+        for (IndivIdx idx : mutants) {
+            mutate_headless(population[idx].tree(), 3, rd, &rv);
+        }
+
         Population next_population;
         while (next_population.size() < population.size()) {
             IndivIdx idx1 = tournament(
@@ -92,9 +99,9 @@ int main(int argc, char** argv) {
                 population,
                 random_group(population, args.crossover_tournament_size, rd));
             auto offspring = crossover_one_point(
-                rd,
                 population[idx1].tree(),
-                population[idx2].tree());
+                population[idx2].tree(),
+                rd);
             for (stree::Tree& tree : offspring) {
                 next_population.emplace_back(std::move(tree));
             }

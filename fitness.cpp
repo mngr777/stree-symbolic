@@ -55,7 +55,8 @@ Fitness evaluate(const stree::Tree& tree, const FitnessCaseList& fitness_cases) 
 
 Fitness evaluate(const stree::Tree& tree, const FitnessCase& fitness_case) {
     stree::Value answer = stree::eval(tree, fitness_case.params);
-    return std::fabs(answer - fitness_case.answer);
+    auto fitness = (answer - fitness_case.answer);
+    return fitness < 0.0 ? -fitness : fitness;
 }
 
 

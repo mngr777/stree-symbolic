@@ -1,16 +1,25 @@
 #ifndef GENETIC_HPP_
 #define GENETIC_HPP_
 
+#include <vector>
 #include <stree/stree.hpp>
 #include "random.hpp"
 
-stree::Subtree random_subtree(Random& rd, stree::Tree& tree, float p_term);
+using TreeList = std::vector<stree::Tree>;
 
-std::vector<stree::Tree> crossover_one_point(
-    Random& rd,
+TreeList crossover_one_point(
     stree::Tree tree1,
     stree::Tree tree2,
+    Random& rd,
     float p_term = 0.2);
 
+// TODO: same depth by default (do not mess up references)
+void mutate_headless(
+    stree::Tree& tree,
+    unsigned depth,
+    Random& rd,
+    RandomValue* rv = nullptr,
+    float p_term = 0.2,
+    float p_term_grow = 0.2);
 
 #endif
