@@ -77,12 +77,11 @@ int main(int argc, char** argv) {
         &rv,
         args.p_term);
 
+    unsigned generation = 1;
     Fitness min_fitness = evaluate(population, fitness_cases);
-    for (
-        unsigned generation = 1;
-        generation <= args.max_generation && min_fitness > args.goal;
-        ++generation)
-    {
+    for (; generation <= args.max_generation && min_fitness > args.goal; ++generation) {
+        std::cout << "Generation " << generation << std::endl;
+
         // TEST mutation
         assert(population.size() > 10);
         GroupIdx mutants = random_group(population, 10, rd);

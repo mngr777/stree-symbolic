@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     env.add_function("%", 2, &::fun::divide);
     env.add_function("square", 1, &::fun::square);
     env.add_function("cube", 1, &::fun::cube);
-    env.add_function("^", 2, &::fun::divide);
+    env.add_function("expt", 2, &::fun::power);
     env.add_positional("x", 0);
 
     // Parse expression
