@@ -70,11 +70,11 @@ int main(int argc, char** argv) {
 
     // Parse expression
     stree::Parser parser(&env);
+    std::cerr << expr << std::endl;
     parser.parse(expr);
     if (parser.is_error())
         std::cerr << "Parse error: " << parser.error_message() << std::endl;
     if (!parser.is_done()) {
-        std::cerr << expr << std::endl;
         std::cerr << "Parsing not finished" << std::endl
                   << "State: " << parser.state_string() << std::endl
                   << "Line: " << parser.line_num()
