@@ -26,7 +26,7 @@ stree::Value minus(const stree::Arguments& args, stree::DataPtr) {
 stree::Value multiply(const stree::Arguments& args, stree::DataPtr) {
     return std::accumulate(
         args.begin(), args.end(),
-        1,
+        static_cast<stree::Value>(1),
         std::multiplies<stree::Value>());
 }
 
