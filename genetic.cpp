@@ -9,7 +9,7 @@ stree::Subtree random_subtree(stree::Tree& tree, Random& rd, float p_term);
 } // namespace
 
 
-TreeList crossover_one_point(
+TreeList crossover_random(
     stree::Tree tree1,
     stree::Tree tree2,
     Random& rd,
@@ -18,7 +18,37 @@ TreeList crossover_one_point(
     stree::Subtree subtree1 = random_subtree(tree1, rd, p_term);
     stree::Subtree subtree2 = random_subtree(tree2, rd, p_term);
     subtree1.swap(subtree2);
-    return std::vector<stree::Tree>({std::move(tree1), std::move(tree2)});
+    return TreeList({std::move(tree1), std::move(tree2)});
+}
+
+TreeList crossover_one_point(
+    stree::Tree tree1,
+    stree::Tree tree2,
+    Random& rd,
+    float p_term,
+    bool *success)
+{
+    // NOTE: ignoreing p_term for now
+    (*success) = false;
+    stree::Environment* env = tree1.env();
+    assert(tree2.env() == env);
+    stree::CommonRegion common_region = stree::common_region(
+        tree1.env(),
+        tree1.root(),
+        tree2.root(),
+        stree::NodeCompare(env));
+    if (common_region.size() > 0) {
+        // Swap subtrees in common region
+        std::uniform_int_distribution<stree::NodeNum> dist(0, common_region.size() - 1);
+        stree::NodeNum idx1 = dist(rd);
+        stree::NodeNum idx2 = dist(rd);
+        stree::Subtree subtree1(env, nullptr, common_region[idx1].node1);
+        stree::Subtree subtree2(env, nullptr, common_region[idx2].node2);
+        subtree1.swap(subtree2);
+        // Success if nodes are not both roots
+        (*success) = (common_region[idx1].n != 0 && common_region[idx2].n != 0);
+    }
+    return TreeList({std::move(tree1), std::move(tree2)});
 }
 
 void mutate_headless(

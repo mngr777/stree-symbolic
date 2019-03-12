@@ -90,21 +90,34 @@ int main(int argc, char** argv) {
         }
 
         Population next_population;
+        unsigned crossover_num = 0, crossover_success_num = 0;
         while (next_population.size() < population.size()) {
+            // Select 1st individual
             IndivIdx idx1 = tournament(
                 population,
                 random_group(population, args.crossover_tournament_size, rd));
+            // Select 2nd individual
             IndivIdx idx2 = tournament(
                 population,
                 random_group(population, args.crossover_tournament_size, rd));
+            // Crossover
+            bool crossover_success = false;
             auto offspring = crossover_one_point(
                 population[idx1].tree(),
                 population[idx2].tree(),
-                rd);
+                rd, 0.2,
+                &crossover_success);
+            ++crossover_num;
+            if (crossover_success)
+                ++crossover_success_num;
+            // Add to new population
             for (stree::Tree& tree : offspring) {
                 next_population.emplace_back(std::move(tree));
             }
         }
+        std::cout << "Crossover number: " << crossover_num
+                  << ", success " << crossover_success_num
+                  << std::endl;
         std::swap(population, next_population);
         min_fitness = evaluate(population, fitness_cases);
     }
