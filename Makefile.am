@@ -16,6 +16,8 @@ symbolic_SOURCES = symbolic.cpp \
 	genetic.cpp \
 	random.hpp \
 	random.cpp \
+	run.hpp \
+	run.cpp \
 	tree.hpp \
 	tree.cpp
 symbolic_LDADD = -lstree

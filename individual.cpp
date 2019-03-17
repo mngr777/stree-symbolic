@@ -1,6 +1,7 @@
 #include "individual.hpp"
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <limits>
 #include <random>
 #include "tree.hpp"
@@ -39,6 +40,34 @@ Fitness evaluate(Population& population, const FitnessCaseList& fitness_cases) {
                 evaluate(individual, fitness_cases));
     }
     return min_fitness;
+}
+
+std::ostream& operator<<(std::ostream& os, PopulationFitness fitness) {
+    return os << "Min: " << fitness.min << std::endl
+              << "Max: " << fitness.max << std::endl
+              << "Avg: " << fitness.avg << std::endl;
+}
+
+PopulationFitness population_fitness(const Population& population) {
+    PopulationFitness result;
+    Fitness sum = 0.0;
+    auto num = population.size();
+    for (auto& individual : population) {
+        Fitness fitness = individual.fitness();
+        result.min = (result.min < 0)
+            ? fitness
+            : std::min(result.min, fitness);
+        result.max = (result.max < 0)
+            ? fitness
+            : std::max(result.max, fitness);
+        if (std::isfinite(fitness)) {
+            sum += fitness;
+        } else {
+            --num;
+        }
+    }
+    result.avg = sum / num;
+    return result;
 }
 
 GroupIdx random_group(const Population& population, unsigned size, Random& rd) {

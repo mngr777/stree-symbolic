@@ -2,6 +2,7 @@
 #define INDIVIDUAL_HPP_
 
 #include <functional>
+#include <ostream>
 #include <set>
 #include <utility>
 #include <stree/stree.hpp>
@@ -57,6 +58,21 @@ Population ramped_half_and_half(
 
 Fitness evaluate(Individual& individual, const FitnessCaseList& fitness_cases);
 Fitness evaluate(Population& population, const FitnessCaseList& fitness_cases);
+
+
+struct PopulationFitness {
+    PopulationFitness()
+        : min(-1.0), max(-1.0), avg(-1.0) {}
+    Fitness min;
+    Fitness max;
+    Fitness avg;
+    // Fitness median;
+    // Fitness var;
+};
+
+std::ostream& operator<<(std::ostream& os, PopulationFitness fitness);
+
+PopulationFitness population_fitness(const Population& population);
 
 GroupIdx random_group(const Population& population, unsigned size, Random& rd);
 

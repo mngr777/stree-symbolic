@@ -28,8 +28,9 @@ TreeList crossover_one_point(
     float p_term,
     bool *success)
 {
-    // NOTE: ignoreing p_term for now
-    (*success) = false;
+    // NOTE: ignoring p_term for now
+    if (success)
+        (*success) = false;
     stree::Environment* env = tree1.env();
     assert(tree2.env() == env);
     stree::CommonRegion common_region = stree::common_region(
@@ -46,7 +47,8 @@ TreeList crossover_one_point(
         stree::Subtree subtree2(env, nullptr, common_region[idx2].node2);
         subtree1.swap(subtree2);
         // Success if nodes are not both roots
-        (*success) = (common_region[idx1].n != 0 && common_region[idx2].n != 0);
+        if (success)
+            (*success) = (common_region[idx1].n != 0 && common_region[idx2].n != 0);
     }
     return TreeList({std::move(tree1), std::move(tree2)});
 }
