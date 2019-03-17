@@ -66,7 +66,12 @@ int main(int argc, char** argv) {
     env.add_function("square", 1, &::fun::square);
     env.add_function("cube", 1, &::fun::cube);
     env.add_function("expt", 2, &::fun::power);
-    env.add_positional("x", 0);
+    env.add_positional("a", 0);
+    env.add_positional("b", 1);
+    env.add_positional("c", 2);
+    env.add_positional("d", 3);
+    env.add_positional("e", 4);
+    env.add_positional("f", 5);
 
     // Parse expression
     stree::Parser parser(&env);
